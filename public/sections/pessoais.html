@@ -1,0 +1,153 @@
+<h1>Preenchimento da Ficha</h1>
+<h2>1 - Dados Pessoais</h2>
+<div class='line'>
+  <label class='f2'>Foto do Servidor<br/>
+    <input type="file" id="foto" class="file" accept="image/*">
+  </label>
+
+  <label class='f1'>Matrícula
+    <input type="text" id="matricula">
+  </label>
+
+  <label class='f2'>Nome do(a) Servidor(a)
+    <input required type="text" id="nome">
+  </label>
+</div>
+<div class='line'>
+  <label class='f1'>Data de Nascimento
+    <input required type="date" id="nascimento">
+  </label>
+  
+  <label class='f1'>Sexo<br/>
+    <select required  id="sexo">
+      <option value="">Selecione</option>
+      <option value="MASCULINO">Masculino</option>
+      <option value="FEMININO">Feminino</option>
+      <option value="OUTRO">Outro</option>
+    </select>
+  </label>
+  
+  <label class='f1'>Estado Civil<br/>
+    <select required id="estado_civil">
+      <option value="">Selecione</option>
+      <option value="SOLTEIRO(A)">Solteiro(a)</option>
+      <option value="CASADO(A)">Casado(a)</option>
+      <option value="DIVORCIADO(A)">Divorciado(a)</option>
+      <option value="VIÚVO(A)">Viúvo(a)</option>
+      <option value="UNIÃO ESTÁVEL">União Estável</option>
+    </select>
+  </label>
+</div>
+
+<div class='line'>
+  <label class='f2'>Naturalidade
+    <input required type="text" id="naturalidade">
+  </label>
+  
+  <label class="f05">UF (Estado)
+  <select required id="uf">
+    <option value="">Selecione</option>
+    <option value="AC">AC - Acre</option>
+    <option value="AL">AL - Alagoas</option>
+    <option value="AP">AP - Amapá</option>
+    <option value="AM">AM - Amazonas</option>
+    <option value="BA">BA - Bahia</option>
+    <option value="CE">CE - Ceará</option>
+    <option value="DF">DF - Distrito Federal</option>
+    <option value="ES">ES - Espírito Santo</option>
+    <option value="GO">GO - Goiás</option>
+    <option value="MA">MA - Maranhão</option>
+    <option value="MT">MT - Mato Grosso</option>
+    <option value="MS">MS - Mato Grosso do Sul</option>
+    <option value="MG">MG - Minas Gerais</option>
+    <option value="PA">PA - Pará</option>
+    <option value="PB">PB - Paraíba</option>
+    <option value="PR">PR - Paraná</option>
+    <option value="PE">PE - Pernambuco</option>
+    <option value="PI">PI - Piauí</option>
+    <option value="RJ">RJ - Rio de Janeiro</option>
+    <option value="RN">RN - Rio Grande do Norte</option>
+    <option value="RS">RS - Rio Grande do Sul</option>
+    <option value="RO">RO - Rondônia</option>
+    <option value="RR">RR - Roraima</option>
+    <option value="SC">SC - Santa Catarina</option>
+    <option value="SP">SP - São Paulo</option>
+    <option value="SE">SE - Sergipe</option>
+    <option value="TO">TO - Tocantins</option>
+  </select>
+</label>
+
+</div>
+
+<div class='line'>
+  <label class='f2'>Nome da Mãe
+    <input type="text" id="mae">
+  </label>
+  
+  <label class='f2'>Nome do Pai
+    <input type="text" id="pai">
+  </label>
+</div>
+
+<div class='line'>
+  <label class="f4">Endereço
+    <input required type="text" id="endereco">
+  </label>
+  
+  <label maxlenght="3" class="f05">Número
+    <input required onkeypress='return filtroTeclas(event)'  maxlength="3" inputmode="numeric" type="text" id="numero">
+  </label>
+</div>
+
+<div class='line'>
+  <label class="f1">Complemento
+    <input type="text" id="complemento">
+  </label>
+  
+  <label class="f1">Bairro
+    <input required type="text" id="bairro">
+  </label>
+</div>
+
+<div class='line'>
+  <label class="f3">Cidade
+    <input required type="text" id="cidade">
+  </label>
+  
+  <label class="f1">CEP
+    <input 
+      required 
+      type="text" 
+      id="cep"
+      pattern="^[0-9]{2}\.[0-9]{3}-[0-9]{3}$"
+      maxlength="10"
+      inputmode="numeric"
+    >
+  </label>
+</div>
+
+<div class='line'>
+  <label class="f1">Telefone Fixo
+    <input 
+      type="text" 
+      id="telefone_fixo"
+      maxlength="14"
+      pattern="\([0-9]{2}\)\s{1}[0-9]{4}-?[0-9]{4}"
+    >
+  </label>
+  
+  <label class="f1">Celular
+    <input 
+      required 
+      type="tel" 
+      id="celular"
+      maxlength="15"
+      pattern="\([0-9]{2}\)\s{1}[0-9]{4,5}-?[0-9]{4}"
+    >
+  </label>
+  
+  <label class="f2">Email
+    <input type="email" id="email">
+  </label>
+</div>
+

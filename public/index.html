@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FICHA DE CADASTRAMENTO DO(A) SERVIDOR(A)</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.0/html2pdf.bundle.min.js"></script>
+ 
+  <script src="js/config.js" defer></script>
+  <script src="js/clear_form.js" defer></script>
+  <script src="js/state.js" defer></script>
+  <script src="js/validators.js" defer></script>
+  <script src="js/masks.js" defer></script>
+  <script src="js/ui-feedback.js" defer></script>
+  <script src="js/dates.js" defer></script>
+  <script src="js/fields.js" defer></script>
+  <script src="js/sections.js" defer></script>
+  <script src="js/navigation.js" defer></script>
+  <script src="js/pdf.js" defer></script>
+  <script src="js/json-import.js" defer></script>
+  <script src="js/images.js" defer></script>
+  <script src="js/main.js" defer></script>
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/sections/formulario.css">
+</head>
+<body>
+  <form onSubmit="gerarFicha(); return false;" id="formulario">
+    <div id="form-content"></div>
+
+    <div class="botoes">
+      <button type="button" id="btnAnterior" disabled>Anterior</button>
+      <button type="button" id="btnProximo">Próximo</button>
+    </div>
+    <div class="line" style="margin-top: 20px; gap: 10px;">
+    <label class='f2'>Adicionar backup JSON<br/>
+      <input type="file" id="inputArquivoJSON" class="file" accept=".json">
+    </label>
+    <button type="button" id="btnLimpar" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+      🗑️ Limpar Tudo
+    </button>
+  </form>
+  <hr>
+  <div id="pagina-pdf">
+    <div id="ficha" class="container pdf">
+  
+      <div class="titles">
+        <img src="/logo.jpg" style="align-self: center;" height="50px" alt="logo">
+        <div class="text">
+          <h3>PREFEITURA MUNICIPAL DE JUNCO DO MARANHÃO - MA</h3>
+          <h3>CNPJ: 01.612.334/0001-89</h3>
+          <h3>RUA MARCELO MARTINS DE MOURA, 111 - CENTRO - JUNCO DO MA</h3>
+          <h3>DEPARTAMENTO DE RECURSOS HUMANOS</h3>
+        </div>
+        <div class="perfil">
+          <img id="fotoPerfil" src="/avatar.jpg" alt="foto-servidor">
+        </div>
+      </div>
+  
+      <hr color="#000">
+      <h1>FICHA DE CADASTRAMENTO DO(A) SERVIDOR(A)</h1>
+  
+      <h2>1 - DADOS PESSOAIS</h2>
+      <table>
+        <colgroup>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+        </colgroup>
+        <tr class="cabecalho">
+          <td class="border-l cabecalho" colspan="1">MATRÍCULA</td>
+          <td class="cabecalho" colspan="8">NOME DO(A) SERVIDOR(A)</td>
+          <td class="border-r cabecalho" colspan="1">NASCIMENTO</td>
+        </tr>
+        <tr>
+          <td id="out_matricula" class="border-l" colspan="1"></td>
+          <td id="out_nome" colspan="8"></td>
+          <td id="out_nascimento" class="border-r" colspan="1"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="1">SEXO</td>
+          <td class="cabecalho" colspan="3">ESTADO CIVIL</td>
+          <td class="cabecalho" colspan="5">NATURALIDADE</td>  
+          <td class="border-r cabecalho" colspan="1">UF</td>
+        </tr>
+        <tr>
+          <td id="out_sexo" class="border-l" colspan="1"></td>
+          <td id="out_estado_civil" colspan="3"></td>
+          <td id="out_naturalidade" colspan="5"></td>  
+          <td id="out_uf" class="border-r" colspan="1"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="5">NOME DA MÃE</td>
+          <td class="border-r cabecalho" colspan="5">NOME DO PAI</td>
+        </tr>
+        <tr>
+          <td id="out_mae" class="border-l" colspan="5"></td>
+          <td id="out_pai" class="border-r" colspan="5"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="5">ENDEREÇO</td>
+          <td class="cabecalho" colspan="1">NUM</td>
+          <td class="border-r cabecalho" colspan="4">COMPLEMENTO</td>
+        </tr>
+        <tr>
+          <td id="out_endereco" class="border-l" colspan="5"></td>
+          <td id="out_numero" colspan="1">S/N</td>
+          <td id="out_complemento" class="border-r" colspan="10"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="4">BAIRRO</td>
+          <td class="cabecalho" colspan="5">CIDADE</td>
+          <td class="border-r cabecalho" colspan="1">CEP</td>
+        </tr>
+        <tr>
+          <td id="out_bairro" class="border-l" colspan="4"></td>
+          <td id="out_cidade" colspan="5"></td>
+          <td id="out_cep" class="border-r" colspan="1"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="2">TELEFONE FIXO</td>
+          <td class="cabecalho" colspan="3">CELULAR</td>
+          <td class="border-r cabecalho" colspan="5">EMAIL</td>
+        </tr>
+        <tr>
+          <td id="out_telefone_fixo" class="border-l" colspan="2"></td>
+          <td id="out_celular" colspan="3"></td>
+          <td id="out_email" class="border-r" colspan="5"></td>
+        </tr>
+      </table>
+  
+      <h2>2 - DOCUMENTOS</h2>
+      <table>
+        <colgroup>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+        </colgroup>
+        <tr>
+          <td class="border-l cabecalho" colspan="3">CPF</td>
+          <td class="cabecalho" colspan="3">PIS/PASEP</td>
+          <td class="border-r cabecalho" colspan="4">ESCOLARIDADE</td>
+        </tr>
+        <tr>
+          <td id="out_cpf" class="border-l" colspan="3"></td>
+          <td id="out_pis_pasep" colspan="3"></td>
+          <td id="out_escolaridade" class="border-r" colspan="4"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="4">RG</td>
+          <td class="cabecalho" colspan="3">DATA DE EMISSÃO</td>
+          <td class="cabecalho" colspan="2">ÓRGÃO EXP.</td>
+          <td class="border-r cabecalho" colspan="1">UF</td>
+        </tr>
+        <tr>
+          <td id="out_rg" class="border-l" colspan="4"></td>
+          <td id="out_rg_data_emissao" colspan="3"></td>
+          <td id="out_rg_orgao_exp" colspan="2"></td>
+          <td id="out_rg_uf" class="border-r" colspan="1"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="4">CTPS</td>
+          <td class="cabecalho" colspan="2">SÉRIE</td>
+          <td class="cabecalho" colspan="3">DATA DE EMISSÃO</td>
+          <td class="border-r cabecalho" colspan="1">UF</td>
+        </tr>
+        <tr>
+          <td id="out_ctps" class="border-l" colspan="4"></td>
+          <td id="out_ctps_serie" colspan="2"></td>
+          <td id="out_ctps_data_emissao" colspan="3"></td>
+          <td id="out_ctps_uf" class="border-r" colspan="1"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="3">TÍTULO DE ELEITOR</td>
+          <td class="cabecalho" colspan="2">ZONA</td>
+          <td class="cabecalho" colspan="2">SEÇÃO</td>
+          <td class="cabecalho" colspan="2">DATA DE EMISSÃO</td>
+          <td class="border-r cabecalho" colspan="1">UF</td>
+        </tr>
+        <tr>
+          <td id="out_titulo_eleitor" class="border-l" colspan="3"></td>
+          <td id="out_titulo_zona" colspan="2"></td>
+          <td id="out_titulo_secao" colspan="2"></td>
+          <td id="out_titulo_data_emissao" colspan="2"></td>
+          <td id="out_titulo_uf" class="border-r" colspan="1"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="2">BANCO/AGÊNCIA</td>
+          <td class="cabecalho" colspan="2">CONTA COM DV</td>
+          <td class="cabecalho" colspan="3">SINDICATO</td>
+          <td class="border-r cabecalho" colspan="3">PENSÃO ALIMENTÍCIA/JUDICIAL</td>
+        </tr>
+        <tr>
+          <td id="out_banco_agencia" class="border-l" colspan="2"></td>
+          <td id="out_conta_dv" colspan="2"></td>
+          <td id="out_sindicato" colspan="3"></td>
+          <td id="out_pensao" class="border-r" colspan="3"></td>
+        </tr>
+      </table>
+  
+      <h2>3 - DADOS FUNCIONAIS</h2>
+      <table>
+        <colgroup>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+        </colgroup>
+        <tr>
+          <td class="border-l cabecalho" colspan="6">CARGO / FUNÇÃO</td>
+          <td class="cabecalho" colspan="2">DATA DA PORTARIA</td>
+          <td class="border-r cabecalho" colspan="2">DATA DA POSSE</td>
+        </tr>
+        <tr>
+          <td id="out_cargo" class="border-l" colspan="6"></td>
+          <td id="out_data_portaria" colspan="2"></td>
+          <td id="out_data_posse" class="border-r" colspan="2"></td>
+        </tr>
+        <tr>
+          <td class="border-l cabecalho" colspan="5">LOTAÇÃO</td>
+          <td class="border-r cabecalho" colspan="5">ÚLTIMO LOCAL DE TRABALHO</td>
+        </tr>
+        <tr>
+          <td id="out_lotacao" class="border-l" colspan="5"></td>
+          <td id="out_ultimo_local_trabalho" class="border-r" colspan="5"></td>
+        </tr>
+      </table>
+  
+      <h2>4 - DEPENDENTES</h2>
+      <table>
+        <colgroup>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+          <col style="width: 10%"/>
+        </colgroup>
+        <tr>
+          <th class="border-l cabecalho" colspan="5">NOME</th>
+          <th class="cabecalho" colspan="1">TIPO</th>
+          <th class="cabecalho" colspan="2">DATA NASCIMENTO</th>
+          <th class="border-r cabecalho" colspan="2">CPF</th>
+        </tr>
+        <tr>
+          <td id="out_dependente_nome1" class="border-l" colspan="5"></td>
+          <td id="out_dependente_tipo1" colspan="1"></td>
+          <td id="out_dependente_nascimento1" colspan="2"></td>
+          <td id="out_dependente_cpf1" class="border-r" colspan="2"></td>
+        </tr>
+        <tr>
+          <td id="out_dependente_nome2" class="border-l" colspan="5"></td>
+          <td id="out_dependente_tipo2" colspan="1"></td>
+          <td id="out_dependente_nascimento2" colspan="2"></td>
+          <td id="out_dependente_cpf2" class="border-r" colspan="2"></td>
+        </tr>
+        <tr>
+          <td id="out_dependente_nome3" class="border-l" colspan="5"></td>
+          <td id="out_dependente_tipo3" colspan="1"></td>
+          <td id="out_dependente_nascimento3" colspan="2"></td>
+          <td id="out_dependente_cpf3" class="border-r" colspan="2"></td>
+        </tr>
+        <tr>
+          <td id="out_dependente_nome4" class="border-l" colspan="5"></td>
+          <td id="out_dependente_tipo4" colspan="1"></td>
+          <td id="out_dependente_nascimento4" colspan="2"></td>
+          <td id="out_dependente_cpf4" class="border-r" colspan="2"></td>
+        </tr>
+        <tr>
+          <td id="out_dependente_nome5" class="border-l" colspan="5"></td>
+          <td id="out_dependente_tipo5" colspan="1"></td>
+          <td id="out_dependente_nascimento5" colspan="2"></td>
+          <td id="out_dependente_cpf5" class="border-r" colspan="2"></td>
+        </tr>
+        <tr>
+          <td id="out_dependente_nome6" class="border-l" colspan="5"></td>
+          <td id="out_dependente_tipo6" colspan="1"></td>
+          <td id="out_dependente_nascimento6" colspan="2"></td>
+          <td id="out_dependente_cpf6" class="border-r" colspan="2"></td>
+        </tr>
+      </table>
+  
+      <h2>5 - OBSERVAÇÕES</h2>
+      <table style="height: 100px;">
+        <tr>
+          <td id="out_observacoes"></td>
+        </tr>
+      </table>
+  
+      <div class="assinatura">
+        <div>
+          <div class="linha-assinatura"></div>
+          <br>ASSINATURA DO(A) SERVIDOR(A)
+        </div>
+        <div>
+          <div class="linha-assinatura"></div>
+          <br>ASS. E CARIMBO DO RESPONSÁVEL PELA COLETA DAS INFORMAÇÕES
+        </div>
+        <p>Junco do Maranhão - MA, em: <span id="dataAtual"></span></p>
+      </div>
+    </div>
+    <hr>
+    <div class="container-c pdf">
+      <div
+      style="
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+      "
+      >
+  
+        <img src="/logo.jpg" style="align-self: center; justify-self: center;" height="50px" alt="logo">
+      </div>
+      <div class="titles-c">
+        <div class="text">
+          <h3>PREFEITURA MUNICIPAL DE JUNCO DO MARANHÃO - MA</h3>
+          <h3>CNPJ: 01.612.334/0001-89</h3>
+          <h3>RUA MARCELO MARTINS DE MOURA, 111 - CENTRO - JUNCO DO MA</h3>
+          <h3>DEPARTAMENTO DE RECURSOS HUMANOS</h3>
+        </div>
+      </div>
+      <h1 style="margin-block: 20px;"><u>CONTRATO ADMINISTRATIVO POR EXCEPCIONAL INTERESSE PÚBLICO</u></h1>
+      <p class="text-c">
+        Instrumento de <b>CONTRATO ADMINISTRATIVO TEMPORÁRIO de EXECUÇÃO DE SERVIÇOS PESSOAIS</b>, por excepcional interesse público, autorizado pela Lei Municipal nº. 012/2017, no qual são partes: <b>MUNICÍPIO DE JUNCO DO MARANHÃO - MA</b>, CNPJ n.º 01.612.334/0001-89, com sede na Rua Marcelo Martins de Moura, 111 - Centro, Município de Junco do Maranhão - MA, neste ato representado pelo Prefeito, senhor <b>JOSÉ RICARDO DE ALMEIDA RIBEIRO</b>, RG nº 18592032001-2 GEJSC MA e CPF nº. 376.763.423-68, doravante denominado <b>CONTRATANTE</b>, e de outro lado o (a) 
+        Senhor (a) <span id="c_nome">_________________________________________________________________</span>, brasileiro (a), 
+        estado civil: <span id="c_estado_civil">________________________________</span>, inscrito (a) no 
+        CPF nº. <span id="c_cpf">____________________________</span>,
+        RG nº. <span id="c_rg">__________________________________</span>, com 
+        endereço <span id="c_endereco">____________________________________</span>
+        Bairro: <span id="c_bairro">__________________</span> 
+        Cidade: <span id="c_cidade">_____________________________________</span>, doravante denominado (a) simplesmente <b>CONTRATADO (A)</b>. 
+      </p>
+        <h1 style="margin-top: 20px;" class="l">
+          &emsp;&emsp;<u>CONSIDERANDO:</u> 
+        </h1>
+        <ol>
+          <li>O disposto na Constituição Brasileira, em seu art. 37, inciso IX (Capítulo VII do Título III - Da Administração Pública), que estabelece a contratação de pessoal por tempo determinado por excepcional interesse público;</li>
+          <li>A Lei Municipal nº. 012/2017, que trata das contratações temporárias no Município; </li>
+          <li>A necessidade de dispor de profissional para atuar junto aos trabalhos desenvolvidos pelo Município contratante pela necessidade de continuidade da prestação do serviço público à população local</li>
+          <li>O excepcional, urgente e relevante interesse público na referida contratação;<br> Têm entre si, como justo e contratado, na melhor forma de direito o presente instrumento de contrato mediante as seguintes cláusulas: </li>
+        </ol>
+        
+        <h1 class="l">&emsp;&emsp;CLÁUSULA PRIMEIRA - OBJETO E SEUS ELEMENTOS CARACTERÍSTICOS: </h1>
+        <p class="text-c">O objetivo da presente contratação por excepcional interesse público é a prestação de 
+          serviços de <span id="c_cargo">_________________________________________</span> temporário, a ser 
+          desempenhado junto à <span id="c_lotacao">_______________________________</span>, com uma 
+          jornada semanal de <span id="c_carga_horaria">_________________________</span> horas. 
+        </p>
+    </div>
+    <hr>
+    <div class="container-c pdf">
+      <div
+      style="
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+      "
+      >
+  
+      <img src="/logo.jpg" style="align-self: center; justify-self: center;" height="50px" alt="logo">
+      </div>
+      <div class="titles-c">
+        <div class="text">
+          <h3>PREFEITURA MUNICIPAL DE JUNCO DO MARANHÃO - MA</h3>
+          <h3>CNPJ: 01.612.334/0001-89</h3>
+          <h3>RUA MARCELO MARTINS DE MOURA, 111 - CENTRO - JUNCO DO MA</h3>
+          <h3>DEPARTAMENTO DE RECURSOS HUMANOS</h3>
+        </div>
+      </div>
+      <h1 class="l"> &emsp;&emsp; CLÁUSULA SEGUNDA - O REGIME DE EXECUÇÃO OU A FORMA DE FORNECIMENTO:</h1>
+      <p class="text-c">Execução direta, na modalidade mensal, por tempo certo e determinado e em caráter de excepcional interesse público. </p>
+      <h1 class="l">&emsp;&emsp;CLÁUSULA TERCEIRA - O PREÇO E AS CONDIÇÕES DE PAGAMENTO:</h1>
+      <p class="text-c">A 	remuneração 	mensal paga à 	contratada será de<br> R$____________________________________________________________________, coincidente com o pagamento mensal efetuado aos demais Servidores Municipais.</p>
+      <h1 class="l">&emsp;&emsp;CLÁUSULA QUARTA - OS PRAZOS:</h1>
+      <p class="text-c">
+        Este contrato tem como prazo de vigência o período compreendido: <br>
+        &emsp;&emsp;PRAZO DE INÍCIO: <span id="data_inicio">01 de Outubro de 2025</span> <br>
+        &emsp;&emsp;PRAZO DE CONCLUSÃO: <span id="data_final">31 de Dezembro de 2025</span>
+      </p>
+      <h1 class="l">&emsp;&emsp;CLÁUSULA QUINTA - OS DIREITOS E AS RESPONSABILIDADES DAS PARTES, AS PENALIDADES CABÍVEIS E OS VALORES DAS MULTAS:</h1>
+      <p class="text-c">
+        OBRIGAÇÕES E RESPONSABILIDADES DO CONTRATADO (A) - Executar os serviços pessoais em favor da municipalidade, conforme sua formação, durante o prazo de vigência deste instrumento, empenhando esforços no desempenho dos trabalhos realizados. <br>
+        OBRIGAÇÕES E RESPONSABILIDADE DO CONTRATANTE - Disponibilizar todos os meios necessários para a execução dos serviços. <br>
+        O presente contrato deverá ser executado fielmente pelas partes, de acordo com as cláusulas avençadas, respondendo cada uma pelas consequências de sua inexecução total ou parcial. <br>
+        O CONTRATADO (A), não poderá subcontratar ou ceder a terceiros os seus serviços ora contratados. <br>
+        O CONTRATANTE fica no direito que lhe confere, modificar o presente contrato, unilateralmente, para melhor adequação às finalidades de interesse público; rescindir o presente contrato, unilateralmente, nos casos previstos neste instrumento e nos casos previstos em lei e, fiscalizar a execução do contrato.  <br>
+      </p>
+      <h1>
+        
+      </h1>
+    </div>
+    <hr>
+    <div class="container-c pdf">
+      <div
+        style="
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 10px;
+        "
+      >
+  
+        <img src="/logo.jpg" style="align-self: center; justify-self: center;" height="50px" alt="logo">
+      </div>
+      <div class="titles-c">
+        <div class="text">
+          <h3>PREFEITURA MUNICIPAL DE JUNCO DO MARANHÃO - MA</h3>
+          <h3>CNPJ: 01.612.334/0001-89</h3>
+          <h3>RUA MARCELO MARTINS DE MOURA, 111 - CENTRO - JUNCO DO MA</h3>
+          <h3>DEPARTAMENTO DE RECURSOS HUMANOS</h3>
+        </div>
+      </div>
+      <p class="text-c">
+        O presente contrato poderá sofrer alterações com as devidas justificativas - Unilateralmente pelo CONTRATANTE, quando houver modificações do projeto ou das especificações dos serviços aos seus objetivos, e quando necessária à modificação do valor contratual em decorrência de acréscimo ou diminuição quantitativa de seu objeto; e poderá ser alterado o presente contrato, por acordo entre ambas as partes, quando necessária à modificação do regime de execução dos serviços ou fornecimento, em face de originários e, quando necessária modificação da forma de pagamento por imposição de circunstâncias supervenientes. <br>
+        Fica vedada a antecipação de pagamentos, com relação ao cronograma financeiro fixado neste contrato, sem a correspondente contraprestação de fornecimento de serviços. <br>
+        O CONTRATADO fica obrigado a aceitar, nas mesmas condições contratuais, os acréscimos ou supressões que se fizerem necessárias nos serviços. <br>
+        O CONTRATADO fica obrigado a manter, durante toda a execução deste contrato, em compatibilidade com as suas obrigações assumidas. <br>
+        DAS PENALIDADES - O contratado (a) fica desde já obrigado ao exercício da função pública, nos limites e obrigações igualmente impostos aos servidores efetivos por força do Estatuto do Servidor, sem que com isso adquira direito igual aos benefícios individuais previstos naquele texto legal, com exceção a aqueles inerentes ao exercício de determinada função. <br>
+        As sanções administrativas e a tutela judicial aplicam-se a ambas as partes pactuadas neste contrato, conforme disposto em lei. <br>
+        Além das condições estabelecidas neste instrumento contratual, as partes ajustarão condições, obrigações e responsabilidades recíprocas, de modo a não prejudicar o interesse público e nem a probidade administrativa. <br>
+  
+      </p>
+      <h1 class="l">
+        &emsp;&emsp;CLÁUSULA SEXTA - OS CASOS DE RESCISÃO E DE EXTINÇÃO: <br>
+      </h1>
+      <p class="text-c">
+        São casos de rescisão contratual o não cumprimento de cláusulas contratuais, especificações, serviços e o cumprimento irregular de cláusulas instituídas neste contrato, especificações, projetos, serviços ou prazos; a paralisação do serviço ou fornecimento, sem justa causa e prévia comunicação ao CONTRATANTE; o cometimento reiterado de faltas na execução deste contrato, além de outros legalmente estabelecidos. <br>
+        Qualquer das partes contratantes poderá solicitar a rescisão contratual, com prévia comunicação de 10 (dez) dias antecedentes ao último. <br>
+        O presente contrato extinguir-se-á, sem direito a indenizações, pelo término do prazo contratual e por iniciativa de ambas as partes; O tempo de serviço prestado por força da presente contratação será contado para todos os fins e efeitos.
+      </p>
+    </div>
+    <hr>
+    <div class="container-c pdf">
+      <div
+        style="
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 10px;
+        "
+      >
+  
+        <img src="/logo.jpg" style="align-self: center; justify-self: center;" height="50px" alt="logo">
+      </div>
+      <div class="titles-c">
+        <div class="text">
+          <h3>PREFEITURA MUNICIPAL DE JUNCO DO MARANHÃO - MA</h3>
+          <h3>CNPJ: 01.612.334/0001-89</h3>
+          <h3>RUA MARCELO MARTINS DE MOURA, 111 - CENTRO - JUNCO DO MA</h3>
+          <h3>DEPARTAMENTO DE RECURSOS HUMANOS</h3>
+        </div>
+      </div>
+      <h1 class="l">&emsp;&emsp;CLAUSULA SÉTIMA - A LEGISLAÇÃO APLICÁVEL À EXECUÇÃO DESTE CONTRATO E ESPECIALMENTE AOS CASOS OMISSOS: </h1>
+      <p class="text-c">
+        Fica o presente contrato vinculado a Lei Orgânica Municipal e às Leis Municipais que lhe são correlatas, e ainda, aos preceitos legais instituídos pelo Direito Público quanto aos contratos administrativos e às disposições constitucionais pertinentes e aos princípios da teoria geral dos contratos. <br>
+        A contratação dos serviços pessoais de que trata o presente instrumento, se dará por tempo determinado, para atender necessidades urgentes e indispensáveis aos serviços da Administração Pública Municipal, conforme autoriza a Constituição Federal, inciso IX, Art. 37. E também pela Lei Municipal N°. 012/2017. <br>
+        Aos casos omissos, as dúvidas e as questões incidentes serão resolvidas pela autoridade superior que represente o CONTRATANTE, e na impossibilidade desta, a competência será do Poder Judiciário da Comarca do CONTRATANTE. 
+      </p>
+      <h1 class="l">&emsp;&emsp;CLÁUSULA OITAVA - DO FORO: </h1>
+      <p class="text-c">O foro do presente contrato é o da Comarca de Maracaçumé/MA, para dirimir possíveis casos omissos, dúvidas e as questões incidentes oriundas da avença. </p>
+      <h1 class="l">&emsp;&emsp;CLÁUSULA NONA - DAS DISPOSIÇÕES FINAIS: </h1>
+      <p class="text-c">Assim, na melhor forma de direito, sendo livres, capazes e conscientes as partes, assinam o presente contrato em duas vias de igual teor, forma e espaço, sendo cada via composta de laudas digitadas e impressas, na presença de duas testemunhas que conhecem o teor do mesmo e que também assinam, para maior validade jurídica. </p>
+      <div class="c">
+        <p class="text-c c" id="data_por_extenso">Município de Junco do Maranhão/MA, 01 de Outubro de 2025.</p>
+        
+        <div>
+          <img class="c" src="./text.jpeg" alt="assinatura" width="200px">
+          <h1>
+            JOSÉ RICARDO DE ALMEIDA RIBEIRO <br>
+            PREFEITO MUNICIPAL <br>
+            CONTRATANTE 
+          </h1>
+          <h1>
+            <br>
+            __________________________________________
+            <br>
+            CONTRATADO (A) 
+          </h1>
+        </div>
+        <h1 class="l">
+          TESTEMUNHAS:
+          <br>
+          <br>
+        </h1>
+        <h1>
+          1ª _______________________________________CPF: ___________________
+        <br>
+        <br>
+          2ª _______________________________________CPF: ___________________  
+        </h1>
+      </div>
+    </div>
+  </div>
+  <!-- <script defer src="script.js"></script> -->
+  <!-- <script defer src="test.js"></script> -->
+</body>
+</html>
