@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/app/db/mongo";
 import { login } from "@/domain/auth/login";
 import type { LoginInput } from "@/types/auth";
