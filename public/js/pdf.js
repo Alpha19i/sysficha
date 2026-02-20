@@ -11,12 +11,44 @@ async function gerarPDFeJSON() {
   sincronizarDatasContrato();
   
   try {
+    await salvarFichaNoBanco();
     await gerarPDF(nome);
     downloadJSON(state.json, `${nome}.json`);
-    mostrarSucesso('PDF e JSON gerados com sucesso!');
+    mostrarSucesso('PDF, JSON e ficha no banco gerados com sucesso!');
   } catch (error) {
     console.error('Erro ao gerar arquivos:', error);
-    mostrarErro('Erro ao gerar arquivos. Tente novamente.');
+    const message = error instanceof Error ? error.message : 'Erro ao gerar arquivos. Tente novamente.';
+    mostrarErro(message);
+  }
+}
+
+async function salvarFichaNoBanco() {
+  const servidorNome = (state.json.nome || '').trim();
+  const cpf = (state.json.cpf || '').trim();
+
+  if (!servidorNome) {
+    throw new Error('Nome do servidor nao encontrado para salvar no banco.');
+  }
+
+  if (!cpf) {
+    throw new Error('CPF nao encontrado para salvar no banco.');
+  }
+
+  const response = await fetch('/api/fichas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      servidorNome,
+      cpf,
+      payloadJson: state.json
+    })
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data?.created) {
+    const apiMessage = typeof data?.message === 'string' ? data.message : 'Falha ao salvar ficha no banco.';
+    throw new Error(apiMessage);
   }
 }
 
