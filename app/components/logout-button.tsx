@@ -38,9 +38,9 @@ export default function LogoutButton() {
           padding: "8px 16px",
           fontWeight: "bold",
           cursor: loading ? "not-allowed" : "pointer",
-          border: "1px solid #222",
+          border: "none",
           borderRadius: 4, 
-          background: "#d33",
+          background: "#dc3545",
           color: "white"
         }}
       >
