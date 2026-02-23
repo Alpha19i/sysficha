@@ -19,23 +19,22 @@ export default function FichaList() {
   async function fetchFichas() {
     try {
       setLoading(true);
+
       const params = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-        search: search
+        page: String(pagination.page),
+        limit: String(pagination.limit),
+        search
       });
 
       const res = await fetch(`/api/fichas?${params}`);
-      if (!res.ok) {
-        throw new Error("Failed to fetch fichas");
-      }
+      if (!res.ok) throw new Error("Erro ao buscar fichas");
 
       const data: PaginatedFichas = await res.json();
       setFichas(data.items);
       setPagination((prev) => ({ ...prev, total: data.total }));
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
       setLoading(false);
     }
@@ -44,125 +43,100 @@ export default function FichaList() {
   const totalPages = Math.ceil(pagination.total / pagination.limit);
 
   return (
-    <div
-      style={{
-        maxWidth: 980,
-        marginInline: "auto",
-        padding: 12,
-        background: "#f3f3f3"
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 12
-        }}
-      >
-        <h1 style={{ margin: "0 0 12px 0", fontSize: 16 }}>Fichas</h1>
+    <div className="panel">
+      {/* header */}
+      <div className="panel-header">
+        <h1 style={{ margin: 0, fontSize: 16 }}>Fichas</h1>
+
         <Link
           href="/ficha/add"
-          style={{
-            padding: "8px 16px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            border: "1px solid #777",
-            background: "#fff",
-            textDecoration: "none",
-            color: "#000"
-          }}
+          className="btn"
+          style={{ textDecoration: "none", color: "#000" }}
         >
           Nova Ficha
         </Link>
       </div>
 
-      <input
-        type="text"
-        placeholder="Buscar por nome ou CPF..."
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPagination((prev) => ({ ...prev, page: 1 }));
-        }}
-        style={{
-          width: "100%",
-          padding: 6,
-          marginBottom: 12,
-          marginTop: 0,
-          height: 32,
-          border: "1px solid #777"
-        }}
-      />
+      {/* busca no mesmo padrão do formulário */}
+      <div className="line" style={{ alignItems: "end", marginBottom: 12 }}>
+        <div className="f3">
+          <label>Buscar por nome ou CPF</label>
+          <input
+            className="input"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPagination((prev) => ({ ...prev, page: 1 }));
+            }}
+          />
+        </div>
+      </div>
 
-      {error ? (
-        <p style={{ marginTop: 10, color: "#b00020", fontSize: 12, fontWeight: 600 }}>{error}</p>
-      ) : null}
+      {/* estados */}
+      {error && (
+        <p style={{ marginTop: 10, color: "#b00020", fontSize: 12, fontWeight: 600 }}>
+          {error}
+        </p>
+      )}
 
       {loading ? (
-        <p style={{ textAlign: "center", padding: 40, color: "#666" }}>Carregando...</p>
+        <p style={{ textAlign: "center", padding: 40, color: "#666" }}>
+          Carregando...
+        </p>
       ) : fichas.length === 0 ? (
-        <p style={{ textAlign: "center", padding: 40, color: "#666" }}>Nenhuma ficha encontrada</p>
+        <p style={{ textAlign: "center", padding: 40, color: "#666" }}>
+          Nenhuma ficha encontrada
+        </p>
       ) : (
         <>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              marginBottom: 12,
-              marginTop: 12,
-              border: "1px solid #777"
-            }}
-          >
+          {/* tabela padrão do sistema */}
+          <table className="table">
             <thead>
-              <tr style={{ background: "#f3f3f3", borderBottom: "1px solid #777" }}>
-                <th style={{ padding: 8, textAlign: "left", fontWeight: 600, borderRight: "1px solid #777" }}>
-                  Nome
-                </th>
-                <th style={{ padding: 8, textAlign: "left", fontWeight: 600, borderRight: "1px solid #777" }}>
-                  CPF
-                </th>
-                <th style={{ padding: 8, textAlign: "left", fontWeight: 600, borderRight: "1px solid #777" }}>
-                  Data de Criação
-                </th>
-                <th style={{ padding: 8, textAlign: "left", fontWeight: 600 }}>Ações</th>
+              <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Data de Criação</th>
+                <th>Ações</th>
               </tr>
             </thead>
+
             <tbody>
               {fichas.map((ficha) => (
-                  <tr key={ficha.id} style={{ borderBottom: "1px solid #777" }}>
-                  <td style={{ padding: 8, borderRight: "1px solid #777" }}>{ficha.servidorNome || "-"}</td>
-                  <td style={{ padding: 8, borderRight: "1px solid #777" }}>{ficha.cpf || "-"}</td>
-                  <td style={{ padding: 8, borderRight: "1px solid #777" }}>
-                    {ficha.createdAt ? new Date(ficha.createdAt).toLocaleDateString("pt-BR") : "-"}
+                <tr key={ficha.id}>
+                  <td>{ficha.servidorNome || "-"}</td>
+                  <td>{ficha.cpf || "-"}</td>
+                  <td>
+                    {ficha.createdAt
+                      ? new Date(ficha.createdAt).toLocaleDateString("pt-BR")
+                      : "-"}
                   </td>
-                  <td style={{ padding: 8, display: "flex", gap: 8 }}>
+
+                  <td style={{ 
+                    // display: "flex", 
+                    alignItems: 'space-between',
+                    height: "100%",
+                    gap: 10
+                    // border: 'none'
+                  }}>
                     <Link
                       href={`/ficha/${ficha.id}`}
-                      style={{
-                          padding: "4px 8px",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                        border: "1px solid #777",
-                        background: "#fff",
-                        textDecoration: "none",
+                      className="btn"
+                      style={{ 
+                        fontSize: 12, 
+                        padding: "0 8px", 
+                        textDecoration: "none", 
                         color: "#000",
-                        fontSize: 12
-                    }}
+                        marginRight: 10
+                      }}
                     >
                       Editar
                     </Link>
+
                     <button
+                      className="btn"
+                      style={{ fontSize: 12, padding: "0 8px" }}
                       onClick={() => {
-                        // TODO: Implement Button and /ficha/${ficha.id}}
-                        console.log("Generate PDF for ficha:", ficha.id);
-                      }}
-                      style={{
-                        padding: "4px 8px",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                        border: "1px solid #777",
-                        background: "#fff"
+                        console.log("Gerar PDF:", ficha.id);
                       }}
                     >
                       PDF
@@ -173,42 +147,29 @@ export default function FichaList() {
             </tbody>
           </table>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 10,
-              marginTop: 12
-            }}
-          >
+          {/* paginação */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
             {pagination.page > 1 && (
               <button
-                onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
-                style={{
-                  padding: "8px 16px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  border: "1px solid #777",
-                  background: "#fff"
-                }}
+                className="btn"
+                onClick={() =>
+                  setPagination((prev) => ({ ...prev, page: prev.page - 1 }))
+                }
               >
                 Anterior
               </button>
             )}
+
             <span style={{ fontWeight: 600 }}>
-              Página {pagination.page} de {totalPages}
+              Página {pagination.page} de {totalPages || 1}
             </span>
+
             {pagination.page < totalPages && (
               <button
-                onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
-                style={{
-                  padding: "8px 16px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  border: "1px solid #777",
-                  background: "#fff"
-                }}
+                className="btn"
+                onClick={() =>
+                  setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+                }
               >
                 Próxima
               </button>
