@@ -7,3 +7,66 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* container padrão do sistema */
+.panel {
+  max-width: 980px;
+  margin-inline: auto;
+  padding: 10px;
+  background: #f3f3f3;
+  border-bottom: 2px solid #000;
+}
+
+/* header padrão */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* input padrão */
+.input {
+  width: 100%;
+  padding: 6px;
+  height: 32px;
+  border: 1px solid #777;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* botão padrão */
+.btn {
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #777;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* tabela padrão */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  border: 1px solid red;
+  border-radius: 4px;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  border-right: 1px solid #777;
+}
+
+.table th {
+  font-weight: 600;
+  background: #f3f3f3;
+}
+
+.table tr {
+  border-bottom: 1px solid #777;
+}
+
