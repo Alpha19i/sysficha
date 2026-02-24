@@ -12,6 +12,11 @@ import ObservacoesSection from "@/app/ficha/sections/observacoes";
 import { restaurarValoresCampos } from "@/app/ficha/core/restauracao";
 import { gerarPDFeJSON } from "@/app/ficha/core/geracao";
 import { carregarArquivoJSON } from "../ficha/core/jsonImport";
+import {
+  atualizarDataFinal,
+  atualizarDataInicio,
+  atualizarDataPorExtenso
+} from "../ficha/core/espelhamento";
 
 const SECTIONS = [
   PessoaisSection,
@@ -64,7 +69,6 @@ export default function FormSection() {
 
     try {
       setLoading(true);
-      console.log(data)
       await gerarPDFeJSON({ data, setField });
       alert("PDF, JSON e ficha salvos com sucesso!");
     } catch (error) {
@@ -86,7 +90,7 @@ export default function FormSection() {
     window.location.reload(); // mantém compatibilidade com seu fluxo atual
   }
 
-   function mostrarSucesso(msg: string) {
+  function mostrarSucesso(msg: string) {
     alert(msg);
   }
 
@@ -103,6 +107,13 @@ export default function FormSection() {
     }
     if (dados.input_data_por_extenso) {
       atualizarDataPorExtenso(dados.input_data_por_extenso);
+    }
+  }
+
+  function handleAfterLoadJSON(dados: Record<string, string>) {
+    atualizarCamposEspeciais(dados);
+    if (containerRef.current) {
+      restaurarValoresCampos(containerRef.current);
     }
   }
 
@@ -151,7 +162,7 @@ export default function FormSection() {
                   setField,
                   onSuccess: mostrarSucesso,
                   onError: mostrarErro,
-                  afterLoad: atualizarCamposEspeciais
+                  afterLoad: handleAfterLoadJSON
                 })
               }
 

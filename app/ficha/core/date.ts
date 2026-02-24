@@ -5,18 +5,29 @@ interface DOMElements {
   dataInicio: HTMLElement | null;
 }
 
-// Exemplo de objeto DOM
-const DOM: DOMElements = {
-  dataAtual: document.getElementById("data-atual"),
-  dataFinal: document.getElementById("data-final"),
-  dataPorExtenso: document.getElementById("data-por-extenso"),
-  dataInicio: document.getElementById("data-inicio"),
-};
+function getDOM(): DOMElements {
+  if (typeof document === "undefined") {
+    return {
+      dataAtual: null,
+      dataFinal: null,
+      dataPorExtenso: null,
+      dataInicio: null
+    };
+  }
+
+  return {
+    dataAtual: document.getElementById("data-atual"),
+    dataFinal: document.getElementById("data-final"),
+    dataPorExtenso: document.getElementById("data-por-extenso"),
+    dataInicio: document.getElementById("data-inicio") as HTMLInputElement | null
+  };
+}
 
 /**
  * Configura datas padrão no formulário/ficha
  */
 export function configurarDatas(): void {
+  const DOM = getDOM();
   const hoje = new Date();
   const ano = hoje.getFullYear();
 

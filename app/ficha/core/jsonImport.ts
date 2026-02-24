@@ -1,3 +1,5 @@
+import { atualizarCampo } from "./espelhamento";
+
 export type FichaData = Record<string, string>;
 
 interface ImportDeps {
@@ -38,6 +40,7 @@ function carregarDadosJSON(dados: FichaData, deps: ImportDeps) {
   Object.entries(dados).forEach(([campo, valor]) => {
     if (typeof valor !== "string") return;
     deps.setField(campo, valor);
+    atualizarCampo(campo, valor);
   });
 
   deps.afterLoad?.(dados);

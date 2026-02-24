@@ -10,18 +10,9 @@ const camposContrato = [
 
 export function atualizarCampo(id: string, valor: string, type?: string) {
   const outputId = `out_${id}`;
-  console.log(id);
-  
-  
   const output = document.getElementById(outputId);
-
-  let valorFormatado = valor;
-
-  if (type === "date" && valor) {
-    valorFormatado = valor.split("-").reverse().join("/");
-  } else {
-    valorFormatado = valor.toUpperCase();
-  }
+  const valorFormatado =
+    type === "date" && valor ? valor.split("-").reverse().join("/") : valor.toUpperCase();
 
   if (output) {
     output.textContent = valorFormatado;
@@ -115,7 +106,7 @@ function atualizarCampoContrato(id: string, valor: string) {
   elemento.style.fontWeight = "bold";
 }
 
-function atualizarDataInicio(dataString: string) {
+export function atualizarDataInicio(dataString: string) {
   const spanDataInicio = document.getElementById("data_inicio");
   if (!spanDataInicio) return;
 
@@ -134,7 +125,7 @@ function atualizarDataInicio(dataString: string) {
   fichaState.values.data_inicio = dataFormatada;
 }
 
-function atualizarDataFinal(dataString: string) {
+export function atualizarDataFinal(dataString: string) {
   const spanDataFinal = document.getElementById("data_final");
   if (!spanDataFinal) return;
 
@@ -150,7 +141,7 @@ function atualizarDataFinal(dataString: string) {
   fichaState.values.data_final = dataFormatada;
 }
 
-function atualizarDataPorExtenso(dataString: string) {
+export function atualizarDataPorExtenso(dataString: string) {
   const pDataPorExtenso = document.getElementById("data_por_extenso");
   if (!pDataPorExtenso) return;
 

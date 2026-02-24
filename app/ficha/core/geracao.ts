@@ -1,4 +1,3 @@
-import html2pdf from "html2pdf.js";
 import { formatarDataPorExtenso } from "./date";
 
 type FichaData = Record<string, string>;
@@ -11,7 +10,7 @@ interface GerarDeps {
 export async function gerarPDFeJSON({ data, setField }: GerarDeps): Promise<void> {
   const nome = normalizarNomeArquivo(data.nome);
 
-  sincronizarDatasContrato(data, setField);
+  sincronizarDatasContrato(setField);
 
   try {
     await salvarFichaNoBanco(data);
@@ -23,7 +22,7 @@ export async function gerarPDFeJSON({ data, setField }: GerarDeps): Promise<void
       error instanceof Error
         ? error.message
         : "Erro ao gerar arquivos. Tente novamente.";
-    throw new Error(message);
+    throw new Error(message, { cause: error });
   }
 }
 
@@ -61,10 +60,7 @@ async function salvarFichaNoBanco(data: FichaData): Promise<void> {
   }
 }
 
-function sincronizarDatasContrato(
-  data: FichaData,
-  setField: (id: string, value: string) => void
-): void {
+function sincronizarDatasContrato(setField: (id: string, value: string) => void): void {
   const inputDataInicio = document.getElementById(
     "input_data_inicio"
   ) as HTMLInputElement | null;
@@ -138,6 +134,7 @@ const pdfOptions: Html2PdfOptions= {
   }
 
 async function gerarPDF(nome: string): Promise<void> {
+  const html2pdf = (await import("html2pdf.js")).default;
   const pagina = document.getElementById("pagina-pdf");
   if (!pagina) throw new Error("Container do PDF não encontrado.");
 
