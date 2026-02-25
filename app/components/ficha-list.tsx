@@ -8,6 +8,7 @@ import type { Ficha } from "@/types/ficha";
 export default function FichaList() {
   const [fichas, setFichas] = useState<Ficha[]>([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +41,11 @@ export default function FichaList() {
     }
   }
 
+  function handleSearch() {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    setSearch(searchInput.trim());
+  }
+
   const totalPages = Math.ceil(pagination.total / pagination.limit);
 
   return (
@@ -63,13 +69,19 @@ export default function FichaList() {
           <label>Buscar por nome ou CPF</label>
           <input
             className="input"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPagination((prev) => ({ ...prev, page: 1 }));
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSearch();
+              }
             }}
           />
         </div>
+        <button className="btn" type="button" onClick={handleSearch}>
+          Buscar
+        </button>
       </div>
 
       {/* estados */}
@@ -132,15 +144,13 @@ export default function FichaList() {
                       Editar
                     </Link>
 
-                    <button
+                    <Link
+                      href={`/ficha/${ficha.id}/pdf`}
                       className="btn"
-                      style={{ fontSize: 12, padding: "0 8px" }}
-                      onClick={() => {
-                        console.log("Gerar PDF:", ficha.id);
-                      }}
+                      style={{ fontSize: 12, padding: "0 8px", textDecoration: "none", color: "#000" }}
                     >
                       PDF
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

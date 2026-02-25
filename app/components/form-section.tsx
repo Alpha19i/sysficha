@@ -15,8 +15,10 @@ import { carregarArquivoJSON } from "../ficha/core/jsonImport";
 import {
   atualizarDataFinal,
   atualizarDataInicio,
-  atualizarDataPorExtenso
+  atualizarDataPorExtenso,
+  atualizarCampo
 } from "../ficha/core/espelhamento";
+import { fichaState } from "../ficha/state/fichaState";
 
 const SECTIONS = [
   PessoaisSection,
@@ -26,7 +28,19 @@ const SECTIONS = [
   ObservacoesSection
 ];
 
-export default function FormSection() {
+type FormSectionMode = "create" | "edit";
+
+interface FormSectionProps {
+  mode?: FormSectionMode;
+  fichaId?: string;
+  initialData?: Record<string, string>;
+}
+
+export default function FormSection({
+  mode = "create",
+  fichaId,
+  initialData
+}: FormSectionProps) {
   const { indice, next, previous, clear, data, setField } = useFicha();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,6 +54,39 @@ export default function FormSection() {
       restaurarValoresCampos(containerRef.current);
     }
   }, [indice]);
+
+  useEffect(() => {
+    if (!initialData) return;
+
+    Object.entries(initialData).forEach(([campo, valor]) => {
+      if (typeof valor !== "string") return;
+      setField(campo, valor);
+
+      const input = document.getElementById(
+        campo
+      ) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (input) {
+        input.value = valor;
+      }
+
+      if (campo === "foto") {
+        const fotoEl = document.getElementById("fotoPerfil") as HTMLImageElement | null;
+        if (fotoEl) {
+          fotoEl.src = valor;
+        }
+      }
+
+      const type = input?.type === "date" ? "date" : undefined;
+      atualizarCampo(campo, valor, type);
+      fichaState.values[campo] = valor;
+    });
+
+    atualizarCamposEspeciais(initialData);
+
+    if (containerRef.current) {
+      restaurarValoresCampos(containerRef.current);
+    }
+  }, [initialData, setField]);
 
   function validarCamposAtuais(): boolean {
     const container = containerRef.current;
@@ -64,6 +111,55 @@ export default function FormSection() {
 
     if (!isLast) {
       next();
+      return;
+    }
+
+    if (mode === "edit") {
+      if (!fichaId) {
+        alert("ID da ficha nao encontrado.");
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const servidorNome = (data.nome || "").trim();
+        const cpf = (data.cpf || "").trim();
+
+        if (!servidorNome || !cpf) {
+          alert("Nome e CPF sao obrigatorios para salvar.");
+          return;
+        }
+
+        const response = await fetch(`/api/fichas/${fichaId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            servidorNome,
+            cpf,
+            payloadJson: data
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result?.updated) {
+          const message =
+            typeof result?.message === "string"
+              ? result.message
+              : "Erro ao salvar ficha.";
+          alert(message);
+          return;
+        }
+
+        alert("Ficha atualizada com sucesso!");
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Erro ao salvar ficha.";
+        alert(message);
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -144,7 +240,15 @@ export default function FormSection() {
             onClick={handleProximo}
             disabled={loading}
           >
-            {loading ? "Gerando..." : isLast ? "Gerar PDF" : "Próximo"}
+            {loading
+              ? mode === "edit"
+                ? "Salvando..."
+                : "Gerando..."
+              : isLast
+                ? mode === "edit"
+                  ? "Salvar Alteracoes"
+                  : "Gerar PDF"
+                : "Próximo"}
           </button>
         </div>
 

@@ -10,7 +10,7 @@ export function restaurarValoresCampos(container: HTMLElement) {
     if (!saved) return;
 
     if (input.type === "date") {
-      input.value = saved.split("/").reverse().join("-");
+      input.value = saved.includes("/") ? saved.split("/").reverse().join("-") : saved;
     } else {
       input.value = saved.toUpperCase();
     }
