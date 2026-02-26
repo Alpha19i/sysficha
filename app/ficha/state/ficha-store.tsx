@@ -7,6 +7,7 @@ interface FichaContextType {
   indice: number;
   data: FichaData;
   setField: (id: string, value: string) => void;
+  setAllData: (data: FichaData) => void;
   next: () => void;
   previous: () => void;
   clear: () => void;
@@ -25,6 +26,10 @@ export function FichaProvider({ children }: { children: React.ReactNode }) {
     }));
   }
 
+  function setAllData(newData: FichaData) {
+    setData(newData);
+  }
+
   function next() {
     setIndice((i) => i + 1);
   }
@@ -40,7 +45,7 @@ export function FichaProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <FichaContext.Provider
-      value={{ indice, data, setField, next, previous, clear }}
+      value={{ indice, data, setField, setAllData, next, previous, clear }}
     >
       {children}
     </FichaContext.Provider>

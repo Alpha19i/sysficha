@@ -56,40 +56,21 @@ export default function FormSection({
     }
   }, [indice]);
 
+  const jaInicializou = useRef(false);
+  const { setAllData } = useFicha();
+
   useEffect(() => {
     if (!initialData) return;
+    if (jaInicializou.current) return;
 
-    Object.entries(initialData).forEach(([campo, valor]) => {
-      if (typeof valor !== "string") return;
-      setField(campo, valor);
+    jaInicializou.current = true;
 
-      const input = document.getElementById(
-        campo
-      ) as HTMLInputElement | HTMLTextAreaElement | null;
-      if (input) {
-        input.value = valor;
-      }
-
-      if (campo === "foto") {
-        const fotoEl = document.getElementById("fotoPerfil") as HTMLImageElement | null;
-        if (fotoEl) {
-          fotoEl.src = valor;
-        }
-      }
-
-      const type = input?.type === "date" ? "date" : undefined;
-      atualizarCampo(campo, valor, type);
-      fichaState.values[campo] = valor;
-    });
-
-    // atualizarCamposEspeciais(initialData);
+    setAllData(initialData);
 
     if (containerRef.current) {
       restaurarValoresCampos(containerRef.current);
     }
-    
-  }, [initialData, setField]);
-
+  }, [initialData]);
   function validarCamposAtuais(): boolean {
     const container = containerRef.current;
     if (!container) return true;
