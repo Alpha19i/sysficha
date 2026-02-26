@@ -13,9 +13,6 @@ import { restaurarValoresCampos } from "@/app/ficha/core/restauracao";
 import { gerarPDFeJSON } from "@/app/ficha/core/geracao";
 import { carregarArquivoJSON } from "../ficha/core/jsonImport";
 import {
-  atualizarDataFinal,
-  atualizarDataInicio,
-  atualizarDataPorExtenso,
   atualizarCampo
 } from "../ficha/core/espelhamento";
 import { fichaState } from "../ficha/state/fichaState";
@@ -42,7 +39,6 @@ export default function FormSection({
   initialData
 }: FormSectionProps) {
   const { indice, next, previous, clear, data, setField } = useFicha();
-  console.log(data);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
@@ -50,27 +46,77 @@ export default function FormSection({
   const SectionComponent = SECTIONS[indice];
   const isLast = indice === SECTIONS.length - 1;
 
+  function configurarDatasIniciais() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+
+    const mesNumero = String(hoje.getMonth() + 1).padStart(2, "0");
+    const mesExtenso = hoje.toLocaleDateString("pt-BR", { month: "long" });
+    const mesCapitalizado =
+      mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1);
+
+    const dataAtual = `01/${mesNumero}/${ano}`;
+    const dataFinal = `31/12/${ano}`;
+    const dataPorExtenso = `Município de Junco do Maranhão/MA, 01 de ${mesCapitalizado} de ${ano}.`;
+    const dataInicioExtenso = `01 de ${mesCapitalizado} de ${ano}`;
+
+    // 🔥 Salva no estado (vai pro banco mesmo sem o usuário mexer)
+    setField("dataAtual", dataAtual);
+    setField("dataFinal", dataFinal);
+    setField("dataPorExtenso", dataPorExtenso);
+    setField("dataInicioExtenso", dataInicioExtenso);
+
+    // Se você também usa fichaState direto:
+    fichaState.values["dataAtual"] = dataAtual;
+    fichaState.values["dataFinal"] = dataFinal;
+    fichaState.values["dataPorExtenso"] = dataPorExtenso;
+    fichaState.values["dataInicioExtenso"] = dataInicioExtenso;
+  }
+
+  useEffect(() => {
+    if (!data.dataAtual) {
+      configurarDatasIniciais();
+    }
+  }, []);
+  
   useEffect(() => {
     if (containerRef.current) {
       restaurarValoresCampos(containerRef.current);
     }
   }, [indice]);
 
-  const jaInicializou = useRef(false);
-  const { setAllData } = useFicha();
-
   useEffect(() => {
     if (!initialData) return;
-    if (jaInicializou.current) return;
 
-    jaInicializou.current = true;
+    Object.entries(initialData).forEach(([campo, valor]) => {
+      if (typeof valor !== "string") return;
+      setField(campo, valor);
 
-    setAllData(initialData);
+      const input = document.getElementById(
+        campo
+      ) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (input) {
+        input.value = input.type=='date'? valor.split("/").reverse().join("-") : valor;
+      }
+
+      if (campo === "foto") {
+        const fotoEl = document.getElementById("fotoPerfil") as HTMLImageElement | null;
+        if (fotoEl) {
+          fotoEl.src = valor;
+        }
+      }
+
+      const type = input?.type === "date" ? "date" : undefined;
+      atualizarCampo(campo, valor, type);
+      fichaState.values[campo] = valor;
+    });
 
     if (containerRef.current) {
       restaurarValoresCampos(containerRef.current);
     }
+    
   }, [initialData]);
+
   function validarCamposAtuais(): boolean {
     const container = containerRef.current;
     if (!container) return true;
@@ -166,7 +212,7 @@ export default function FormSection({
   function handleLimpar() {
     if (!confirm("Deseja limpar todos os dados?")) return;
     clear();
-    window.location.reload(); // mantém compatibilidade com seu fluxo atual
+    window.location.reload();
   }
 
   function mostrarSucesso(msg: string) {
@@ -176,25 +222,8 @@ export default function FormSection({
   function mostrarErro(msg: string) {
     alert(msg);
   }
-
-  // function atualizarCamposEspeciais(dados: Record<string, string>) {
-  //   if (dados.data_inicio) {
-  //     console.log(dados.data_inicio);
-  //     atualizarDataInicio(dados.data_inicio);
-  //   }
-  //   if (dados.data_final) {
-  //     console.log(dados.data_final);
-  //     atualizarDataFinal(dados.data_final);
-  //   }
-  //   if (dados.data_por_extenso) {
-  //     console.log(dados.data_por_extenso);
-  //     atualizarDataPorExtenso(dados.data_por_extenso);
-  //   }
-  // }
   
   function handleAfterLoadJSON(dados: Record<string, string>) {
-    console.log(dados);
-    // atualizarCamposEspeciais(dados);
     if (containerRef.current) {
       restaurarValoresCampos(containerRef.current);
     }
