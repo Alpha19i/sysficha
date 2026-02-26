@@ -1,4 +1,4 @@
-import { atualizarCampo } from "./espelhamento";
+import { atualizarCampo, desfazerDataPorExtenso } from "./espelhamento";
 
 export type FichaData = Record<string, string>;
 
@@ -40,6 +40,11 @@ function carregarDadosJSON(dados: FichaData, deps: ImportDeps) {
   Object.entries(dados).forEach(([campo, valor]) => {
     if (typeof valor !== "string") return;
     deps.setField(campo, valor);
+    if (['data_inicio', 'data_final', 'data_por_extenso'].includes(campo)){
+      const input ='input_'+campo, data = desfazerDataPorExtenso(valor)
+      deps.setField(input, data);
+      atualizarCampo(input, data);
+    }
     atualizarCampo(campo, valor);
   });
 

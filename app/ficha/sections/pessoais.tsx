@@ -109,7 +109,7 @@ export default function PessoaisSection() {
           Número
           <FichaInput
             id="numero"
-            required
+            value="S/N"
             type="text"
             maxLength={3}
             inputMode="numeric"

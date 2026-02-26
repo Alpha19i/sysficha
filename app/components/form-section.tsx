@@ -42,7 +42,8 @@ export default function FormSection({
   initialData
 }: FormSectionProps) {
   const { indice, next, previous, clear, data, setField } = useFicha();
-
+  console.log(data);
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
 
@@ -81,11 +82,12 @@ export default function FormSection({
       fichaState.values[campo] = valor;
     });
 
-    atualizarCamposEspeciais(initialData);
+    // atualizarCamposEspeciais(initialData);
 
     if (containerRef.current) {
       restaurarValoresCampos(containerRef.current);
     }
+    
   }, [initialData, setField]);
 
   function validarCamposAtuais(): boolean {
@@ -194,20 +196,24 @@ export default function FormSection({
     alert(msg);
   }
 
-  function atualizarCamposEspeciais(dados: Record<string, string>) {
-    if (dados.input_data_inicio) {
-      atualizarDataInicio(dados.input_data_inicio);
-    }
-    if (dados.input_data_final) {
-      atualizarDataFinal(dados.input_data_final);
-    }
-    if (dados.input_data_por_extenso) {
-      atualizarDataPorExtenso(dados.input_data_por_extenso);
-    }
-  }
-
+  // function atualizarCamposEspeciais(dados: Record<string, string>) {
+  //   if (dados.data_inicio) {
+  //     console.log(dados.data_inicio);
+  //     atualizarDataInicio(dados.data_inicio);
+  //   }
+  //   if (dados.data_final) {
+  //     console.log(dados.data_final);
+  //     atualizarDataFinal(dados.data_final);
+  //   }
+  //   if (dados.data_por_extenso) {
+  //     console.log(dados.data_por_extenso);
+  //     atualizarDataPorExtenso(dados.data_por_extenso);
+  //   }
+  // }
+  
   function handleAfterLoadJSON(dados: Record<string, string>) {
-    atualizarCamposEspeciais(dados);
+    console.log(dados);
+    // atualizarCamposEspeciais(dados);
     if (containerRef.current) {
       restaurarValoresCampos(containerRef.current);
     }
