@@ -54,13 +54,31 @@ export default function FichaList() {
       <div className="panel-header">
         <h1 style={{ margin: 0, fontSize: 16 }}>Fichas</h1>
 
-        <Link
-          href="/ficha/add"
-          className="btn"
-          style={{ textDecoration: "none", color: "#000" }}
-        >
-          Nova Ficha
-        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link
+            href="/ficha/lote"
+            className="btn"
+            style={{ textDecoration: "none", color: "#000" }}
+          >
+            Importar Lote
+          </Link>
+
+          <Link
+            href="/ficha/add"
+            className="btn"
+            style={{ textDecoration: "none", color: "#000" }}
+          >
+            Nova Ficha
+          </Link>
+
+          <Link
+            href="/me"
+            className="btn"
+            style={{ textDecoration: "none", color: "#000" }}
+          >
+            Meu Perfil
+          </Link>
+        </div>
       </div>
 
       {/* busca no mesmo padrão do formulário */}
