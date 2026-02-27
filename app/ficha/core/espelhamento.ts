@@ -11,7 +11,8 @@ const camposContrato = [
 
 export function atualizarCampo(id: string, valor: string, type?: string) {
   const outputId = `out_${id}`;
-  const output = document.getElementById(outputId);
+  const output = document.getElementById(outputId)??
+  document.getElementById(id);;
   const valorFormatado =
     type === "date" && valor ? valor.split("-").reverse().join("/") : valor.toUpperCase();
 
@@ -21,6 +22,7 @@ export function atualizarCampo(id: string, valor: string, type?: string) {
 
   if (camposContrato.includes(id)) {
     atualizarCampoContrato(id, valor);
+    console.log(id, valor, camposContrato.includes(id));
   }
 
   switch (id) {
@@ -91,6 +93,9 @@ function atualizarCampoContrato(id: string, valor: string) {
   const isEndereco = id === "numero" || id === "endereco";
   const elementoId = isEndereco ? "c_endereco" : `c_${id}`;
   const elemento = document.getElementById(elementoId);
+  console.log(elementoId,elemento, document.getElementById('c_data_inicio'));
+  
+  fichaState.values[id] = valor;
 
   if (!elemento) return;
 

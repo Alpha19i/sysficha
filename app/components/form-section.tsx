@@ -56,28 +56,34 @@ export default function FormSection({
       mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1);
 
     const dataAtual = `01/${mesNumero}/${ano}`;
-    const dataFinal = `31/12/${ano}`;
+    const dataInicio = `${ano}-${mesNumero}-01`;
+    const dataFinal = `${ano}-12-31`;
     const dataPorExtenso = `Município de Junco do Maranhão/MA, 01 de ${mesCapitalizado} de ${ano}.`;
     const dataInicioExtenso = `01 de ${mesCapitalizado} de ${ano}`;
+    const dataFinalExtenso = `31 de Dezembro de ${ano}`;
 
     // 🔥 Salva no estado (vai pro banco mesmo sem o usuário mexer)
+    atualizarCampo("dataAtual", dataAtual);
     setField("dataAtual", dataAtual);
-    setField("dataFinal", dataFinal);
-    setField("dataPorExtenso", dataPorExtenso);
-    setField("dataInicioExtenso", dataInicioExtenso);
+    atualizarCampo("data_inicio", dataInicioExtenso);
+    setField("input_data_inicio", dataInicio);
+    atualizarCampo("data_final", dataFinalExtenso);
+    setField("input_data_final", dataFinal);
+    atualizarCampo("data_por_extenso", dataPorExtenso);
+    setField("input_data_por_extenso", dataInicio);
 
-    // Se você também usa fichaState direto:
-    fichaState.values["dataAtual"] = dataAtual;
-    fichaState.values["dataFinal"] = dataFinal;
-    fichaState.values["dataPorExtenso"] = dataPorExtenso;
-    fichaState.values["dataInicioExtenso"] = dataInicioExtenso;
-  }
+   }
 
   useEffect(() => {
     if (!data.dataAtual) {
       configurarDatasIniciais();
+      console.log(data);
+      
     }
   }, []);
+  useEffect(() => {
+      console.log(data);
+  }, [data]);
   
   useEffect(() => {
     if (containerRef.current) {
