@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
+import { fichaState } from "./fichaState";
 
 type FichaData = Record<string, string>;
 
@@ -36,6 +37,8 @@ export function FichaProvider({ children }: { children: React.ReactNode }) {
   function clear() {
     setData({});
     setIndice(0);
+    fichaState.values = {};
+    fichaState.indice = 0;
   }
 
   return (
