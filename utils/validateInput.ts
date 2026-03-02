@@ -1,4 +1,4 @@
-import type { LoginInput } from "@/types/auth";
+import type { ChangePasswordInput, LoginInput } from "@/types/auth";
 import type { CreateFichaInput, UpdateFichaInput } from "@/types/ficha";
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -24,6 +24,17 @@ export function parseLoginInput(input: unknown): LoginInput {
   return {
     username: requireNonEmptyString(input.username, "username"),
     password: requireNonEmptyString(input.password, "password")
+  };
+}
+
+export function parseChangePasswordInput(input: unknown): ChangePasswordInput {
+  if (!isObject(input)) {
+    throw new Error("Validation failed: body must be an object");
+  }
+
+  return {
+    currentPassword: requireNonEmptyString(input.currentPassword, "currentPassword"),
+    newPassword: requireNonEmptyString(input.newPassword, "newPassword")
   };
 }
 

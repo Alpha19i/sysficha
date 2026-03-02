@@ -5,6 +5,11 @@ export type LoginInput = {
   password: string;
 };
 
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 export type AuthTokenPayload = {
   sub: string;
   username: string;
