@@ -91,11 +91,11 @@ export default function FichaPdfPage({ id, pdfSections }: FichaPdfPageProps) {
         atualizarCampo(fieldId, rawValue, inferredType);
       });
 
-      if (!payloadData.dataAtual) {
+      if (!payloadData.data_atual) {
         const hoje = new Date();
         const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-        const dataAtual = `01/${mes}/${hoje.getFullYear()}`;
-        atualizarCampo("dataAtual", dataAtual);
+        const data_atual = `01/${mes}/${hoje.getFullYear()}`;
+        atualizarCampo("data_atual", data_atual);
       }
 
       const foto = payloadData.foto;

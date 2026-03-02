@@ -22,7 +22,7 @@ export function atualizarCampo(id: string, valor: string, type?: string) {
 
   if (camposContrato.includes(id)) {
     atualizarCampoContrato(id, valor);
-    console.log(id, valor, camposContrato.includes(id));
+    if ( type === "date") console.log(id, valor, camposContrato.includes(id));
   }
 
   switch (id) {
@@ -40,60 +40,11 @@ export function atualizarCampo(id: string, valor: string, type?: string) {
   fichaState.values[id] = valorFormatado;
 }
 
-/**
- * Atualiza o valor de um input/textarea no DOM e no state, aplicando máscaras e formatações.
- */
-// export function atualizarCampoInput(id: string) {
-//   const input = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
-//   if (!input) return;
-
-//   handleInputMascaras(input);
-
-//   const valor = input.value || "";
-
-//   if (input.type === "text" || input.tagName === "TEXTAREA") {
-//     input.value = valor.toUpperCase();
-//   }
-
-//   atualizarOutput(id, input);
-
-//   if (CONFIG.camposContrato.includes(id)) {
-//     atualizarCampoContrato(id, input.value);
-//   }
-
-//   switch (id) {
-//     case "input_data_inicio":
-//       atualizarDataInicio(valor);
-//       break;
-//     case "input_data_final":
-//       atualizarDataFinal(valor);
-//       break;
-//     case "input_data_por_extenso":
-//       atualizarDataPorExtenso(valor);
-//       break;
-//   }
-// }
-
-// function atualizarOutput(id: string, input: HTMLInputElement | HTMLTextAreaElement) {
-//   const output = document.getElementById(`out_${id}`);
-//   if (!output) return;
-
-//   const valor = input.value || "";
-//   const data = input.type === "date" && valor
-//     ? valor.split("-").reverse().join("/")
-//     : valor.toUpperCase();
-
-//   output.textContent = data;
-//   fichaState.values[id] = input.type === "date" && valor
-//     ? valor.split("-").reverse().join("/")
-//     : valor;
-// }
-
 function atualizarCampoContrato(id: string, valor: string) {
   const isEndereco = id === "numero" || id === "endereco";
   const elementoId = isEndereco ? "c_endereco" : `c_${id}`;
   const elemento = document.getElementById(elementoId);
-  console.log(elementoId,elemento, document.getElementById('c_data_inicio'));
+  // console.log(elementoId,elemento, document.getElementById('c_data_inicio'));
   
   fichaState.values[id] = valor;
 
@@ -114,6 +65,8 @@ function atualizarCampoContrato(id: string, valor: string) {
 }
 
 export function atualizarDataInicio(dataString: string) {
+  console.log('aqui', dataString);
+  
   const spanDataInicio = document.getElementById("c_data_inicio");
   if (!spanDataInicio) return;
 
@@ -124,12 +77,16 @@ export function atualizarDataInicio(dataString: string) {
     const ano = hoje.getFullYear();
     spanDataInicio.textContent = `01 de ${mesCapitalizado} de ${ano}`;
     fichaState.values.data_inicio = spanDataInicio.textContent;
+    fichaState.values.input_data_inicio = dataString;
+    console.log(fichaState.values);
+    
     return;
   }
 
   const dataFormatada = formatarDataPorExtenso(dataString);
   spanDataInicio.textContent = dataFormatada;
   fichaState.values.data_inicio = dataFormatada;
+  fichaState.values.input_data_inicio = dataString;
 }
 
 export function atualizarDataFinal(dataString: string) {
@@ -140,37 +97,44 @@ export function atualizarDataFinal(dataString: string) {
     const ano = new Date().getFullYear();
     spanDataFinal.textContent = `31 de Dezembro de ${ano}`;
     fichaState.values.data_final = spanDataFinal.textContent;
+    fichaState.values.input_data_final = dataString;
     return;
   }
 
   const dataFormatada = formatarDataPorExtenso(dataString);
   spanDataFinal.textContent = dataFormatada;
   fichaState.values.data_final = dataFormatada;
+  fichaState.values.input_data_final = dataString;
 }
 
 export function atualizarDataPorExtenso(dataString: string) {
-  const pDataPorExtenso = document.getElementById("c_data_por_extenso");
-  if (!pDataPorExtenso) return;
+  const DataPorExtenso = document.getElementById("c_data_por_extenso");
+  const DataAtual = document.getElementById("data_atual");
+  if (!DataPorExtenso) return;
+
+  if (DataAtual)
+    DataAtual.textContent = dataString.split('-').reverse().join('/');
+  
 
   if (!dataString) {
     const hoje = new Date();
     const mesExtenso = hoje.toLocaleDateString("pt-BR", { month: "long" });
     const mesCapitalizado = mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1);
     const ano = hoje.getFullYear();
-    pDataPorExtenso.textContent = `Município de Junco do Maranhão/MA, 01 de ${mesCapitalizado} de ${ano}.`;
-    fichaState.values.data_por_extenso = pDataPorExtenso.textContent;
+    DataPorExtenso.textContent = `Município de Junco do Maranhão/MA, 01 de ${mesCapitalizado} de ${ano}.`;
+    fichaState.values.data_por_extenso = DataPorExtenso.textContent;
+    fichaState.values.input_data_por_extenso = dataString;
     return;
   }
 
   const dataFormatada = formatarDataPorExtenso(dataString);
-  pDataPorExtenso.textContent = `Município de Junco do Maranhão/MA, ${dataFormatada}.`;
-  fichaState.values.data_por_extenso = pDataPorExtenso.textContent;
+  DataPorExtenso.textContent = `Município de Junco do Maranhão/MA, ${dataFormatada}.`;
+  fichaState.values.data_por_extenso = DataPorExtenso.textContent;
+  fichaState.values.input_data_por_extenso = dataString;
 }
 
 export function desfazerDataPorExtenso(texto: string): string {
   const match = texto.match(/(\d{1,2}) de ([A-Za-zçÇãÃéÉêÊôÔóÓíÍúÚ]+) de (\d{4})/);
-  console.log('aqui: '+match);
-  
   if (!match) {
     throw new Error("Formato de data inválido");
   }
@@ -200,6 +164,6 @@ export function desfazerDataPorExtenso(texto: string): string {
   if (!mes) {
     throw new Error("Mês inválido");
   }
- console.log( `${ano}-${mes}-${dia}`)
+//  console.log( `${ano}-${mes}-${dia}`)
   return `${ano}-${mes}-${dia}`;
 }

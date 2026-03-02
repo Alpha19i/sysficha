@@ -13,7 +13,8 @@ import { restaurarValoresCampos } from "@/app/ficha/core/restauracao";
 import { gerarPDFeJSON } from "@/app/ficha/core/geracao";
 import { carregarArquivoJSON } from "../ficha/core/jsonImport";
 import {
-  atualizarCampo
+  atualizarCampo,
+  desfazerDataPorExtenso
 } from "../ficha/core/espelhamento";
 import { fichaState } from "../ficha/state/fichaState";
 
@@ -46,7 +47,15 @@ export default function FormSection({
   const SectionComponent = SECTIONS[indice];
   const isLast = indice === SECTIONS.length - 1;
 
+  useEffect(() => {
+    // Prevent leaking data between different ficha pages (edit -> create, etc).
+    fichaState.values = {};
+    fichaState.indice = 0;
+  }, []);
+
   function configurarDatasIniciais() {
+    console.log('datas');
+    
     const hoje = new Date();
     const ano = hoje.getFullYear();
 
@@ -55,7 +64,7 @@ export default function FormSection({
     const mesCapitalizado =
       mesExtenso.charAt(0).toUpperCase() + mesExtenso.slice(1);
 
-    const dataAtual = `01/${mesNumero}/${ano}`;
+    const data_atual = `01/${mesNumero}/${ano}`;
     const dataInicio = `${ano}-${mesNumero}-01`;
     const dataFinal = `${ano}-12-31`;
     const dataPorExtenso = `Município de Junco do Maranhão/MA, 01 de ${mesCapitalizado} de ${ano}.`;
@@ -63,27 +72,21 @@ export default function FormSection({
     const dataFinalExtenso = `31 de Dezembro de ${ano}`;
 
     // 🔥 Salva no estado (vai pro banco mesmo sem o usuário mexer)
-    atualizarCampo("dataAtual", dataAtual);
-    setField("dataAtual", dataAtual);
-    atualizarCampo("data_inicio", dataInicioExtenso);
+    
+    atualizarCampo("input_data_inicio", dataInicio, 'date');
     setField("input_data_inicio", dataInicio);
-    atualizarCampo("data_final", dataFinalExtenso);
+    atualizarCampo("input_data_final", dataFinal, 'date');
     setField("input_data_final", dataFinal);
-    atualizarCampo("data_por_extenso", dataPorExtenso);
+    atualizarCampo("input_data_por_extenso", dataInicio, 'date');
     setField("input_data_por_extenso", dataInicio);
 
    }
 
   useEffect(() => {
-    if (!data.dataAtual) {
+    if (!data.data_atual) {
       configurarDatasIniciais();
-      console.log(data);
-      
     }
   }, []);
-  useEffect(() => {
-      console.log(data);
-  }, [data]);
   
   useEffect(() => {
     if (containerRef.current) {
@@ -93,7 +96,20 @@ export default function FormSection({
 
   useEffect(() => {
     if (!initialData) return;
+    
+    if (initialData.data_inicio) 
+      initialData.input_data_inicio = desfazerDataPorExtenso(initialData.data_inicio)
+    if (!initialData.input_data_inicio) 
+      initialData.input_data_inicio = new Date().toISOString().slice(0, 10);
 
+    if (!initialData.input_data_final || !initialData.input_data_final ) {
+      const [ano, mes, dia] = initialData.input_data_inicio.slice(0, 10).split('-')
+      if (!initialData.input_data_final)
+        initialData.input_data_final = ano+'-12-01'
+      if (!initialData.input_data_por_extenso)
+        initialData.input_data_por_extenso = ano + '-' + mes + '-01'
+      initialData.data_atual = '01/' +  mes + '/' + ano
+    }
     Object.entries(initialData).forEach(([campo, valor]) => {
       if (typeof valor !== "string") return;
       setField(campo, valor);
