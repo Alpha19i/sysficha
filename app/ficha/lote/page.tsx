@@ -29,6 +29,71 @@ function normalizeCpf(raw: string) {
   return raw.replace(/\D/g, "");
 }
 
+function isIsoDate(value: string) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function fromDataInicioExtenso(value: string) {
+  const match = value.match(/(\d{1,2}) de ([A-Za-zçÇãÃéÉêÊôÔóÓíÍúÚ]+) de (\d{4})/);
+  if (!match) return null;
+
+  const dia = match[1].padStart(2, "0");
+  const mesNome = match[2].toLowerCase();
+  const ano = match[3];
+
+  const meses: Record<string, string> = {
+    janeiro: "01",
+    fevereiro: "02",
+    março: "03",
+    marco: "03",
+    abril: "04",
+    maio: "05",
+    junho: "06",
+    julho: "07",
+    agosto: "08",
+    setembro: "09",
+    outubro: "10",
+    novembro: "11",
+    dezembro: "12"
+  };
+
+  const mes = meses[mesNome];
+  if (!mes) return null;
+  return `${ano}-${mes}-${dia}`;
+}
+
+function normalizePayloadDates(payloadJson: Record<string, unknown>) {
+  const next = { ...payloadJson } as Record<string, unknown>;
+
+  if (typeof next.data_inicio === "string" && next.data_inicio.trim().length > 0) {
+    const converted = fromDataInicioExtenso(next.data_inicio);
+    if (converted) {
+      next.input_data_inicio = converted;
+    }
+  }
+
+  const inputDataInicioRaw = next.input_data_inicio;
+  if (typeof inputDataInicioRaw !== "string" || !isIsoDate(inputDataInicioRaw)) {
+    throw new Error("Campo input_data_inicio (data inicial) obrigatorio no JSON.");
+  }
+
+  const [ano, mes] = inputDataInicioRaw.slice(0, 10).split("-");
+
+  if (typeof next.input_data_final !== "string" || !isIsoDate(next.input_data_final)) {
+    next.input_data_final = `${ano}-12-01`;
+  }
+
+  if (
+    typeof next.input_data_por_extenso !== "string" ||
+    !isIsoDate(next.input_data_por_extenso)
+  ) {
+    next.input_data_por_extenso = `${ano}-${mes}-01`;
+  }
+
+  next.data_atual = `01/${mes}/${ano}`;
+  return next;
+}
+
 function toCreatePayload(raw: unknown): CreatePayload {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     throw new Error("JSON deve ser um objeto.");
@@ -44,16 +109,25 @@ function toCreatePayload(raw: unknown): CreatePayload {
     !Array.isArray(obj.payloadJson);
 
   if (hasCreateShape) {
-    const cpf = normalizeCpf(String(obj.cpf));
+    const payloadJson = normalizePayloadDates(obj.payloadJson as Record<string, unknown>);
+    const payloadCpf =
+      typeof payloadJson.cpf === "string" || typeof payloadJson.cpf === "number"
+        ? normalizeCpf(String(payloadJson.cpf))
+        : "";
+    const wrapperCpf = normalizeCpf(String(obj.cpf));
+    const cpf = payloadCpf || wrapperCpf;
+
     if (cpf.length !== 11) throw new Error("CPF invalido.");
+    payloadJson.cpf = cpf;
+
     return {
       servidorNome: String(obj.servidorNome).trim(),
       cpf,
-      payloadJson: obj.payloadJson as Record<string, unknown>
+      payloadJson
     };
   }
 
-  const payloadJson = obj;
+  const payloadJson = normalizePayloadDates(obj);
   const servidorNomeSource = payloadJson.nome ?? payloadJson.servidorNome;
   const cpfSource = payloadJson.cpf;
 
@@ -69,6 +143,7 @@ function toCreatePayload(raw: unknown): CreatePayload {
   if (cpf.length !== 11) {
     throw new Error("CPF invalido.");
   }
+  payloadJson.cpf = cpf;
 
   return {
     servidorNome: servidorNomeSource.trim(),
@@ -80,6 +155,7 @@ function toCreatePayload(raw: unknown): CreatePayload {
 async function parseJsonFiles(files: FileList) {
   const parsed: ParsedItem[] = [];
   const errors: ParsedError[] = [];
+  const seenCpfs = new Set<string>();
 
   for (const file of Array.from(files)) {
     const keyBase = file.name;
@@ -92,7 +168,12 @@ async function parseJsonFiles(files: FileList) {
         json.forEach((item, index) => {
           const key = `${keyBase}#${index + 1}`;
           try {
-            parsed.push({ key, data: toCreatePayload(item) });
+            const data = toCreatePayload(item);
+            if (seenCpfs.has(data.cpf)) {
+              throw new Error(`CPF duplicado no lote: ${data.cpf}`);
+            }
+            seenCpfs.add(data.cpf);
+            parsed.push({ key, data });
           } catch (error) {
             errors.push({
               key,
@@ -103,7 +184,12 @@ async function parseJsonFiles(files: FileList) {
         continue;
       }
 
-      parsed.push({ key: keyBase, data: toCreatePayload(json) });
+      const data = toCreatePayload(json);
+      if (seenCpfs.has(data.cpf)) {
+        throw new Error(`CPF duplicado no lote: ${data.cpf}`);
+      }
+      seenCpfs.add(data.cpf);
+      parsed.push({ key: keyBase, data });
     } catch (error) {
       errors.push({
         key: keyBase,
